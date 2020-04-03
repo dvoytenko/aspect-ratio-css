@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Aspect Ratio Tests</title>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+  <style app>
+    * {
+      box-sizing: border-box;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    nav li {
+      margin: 10px;
+    }
+    nav li[selected] {
+      font-weight: bold;
+    }
+    nav li a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      margin-top: 20px;
+      background: cyan;
+      border: 1px solid gray;
+    }
+
+    .box {
+      background-color: pink;
+      border: 1px dotted green;
+      margin: 4px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  </style>
+
+  <style aspect-ratio>
+    .internal-sizer {
+      display: none;
+    }
+    .bound-width .internal-sizer.for-bound-width,
+    .bound-height .internal-sizer.for-bound-height,
+    .bound-width-and-height .internal-sizer.for-bound-width-and-height {
+      display: block;
+    }
+
+    .outer-cell {
+      display: contents;
+    }
+    .inner-cell {
+      display: contents;
+    }
+
+    .bound-width .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .bound-width .box {
+      width: 100%;
+      max-width: 240px;
+    }
+
+    .bound-height .container {
+      height: 120px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+    .bound-height .box {
+      height: 100%;
+    }
+
+    .bound-width-and-height .container {
+      height: 200px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+    .bound-width-and-height .outer-cell {
+      border: 1px dashed gray;
+      flex: 1 1 30%;
+      height: 100%;
+      display: block;
+      position: relative;
+    }
+    .bound-width-and-height .inner-cell {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .bound-width-and-height .box {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+
+  <script>
+    function setMode(mode) {
+      const menu = document.querySelectorAll('nav li');
+      const main = document.querySelector('main');
+      main.className = mode;
+      Array.from(menu).forEach(item => {
+        if (item.firstElementChild.id === mode) {
+          item.setAttribute('selected', '');
+        } else {
+          item.removeAttribute('selected');
+        }
+      });
+    }
+
+    document.addEventListener('click', (event) => {
+      const { target } = event;
+      if (target.tagName === 'A' && target.matches('nav li > a')) {
+        event.preventDefault();
+        setMode(target.id);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      function createBoundWidthSizer(ratio) {
+        const sizer = document.createElement('div');
+        sizer.className = 'internal-sizer for-bound-width';
+        sizer.style.paddingTop = `${1 / ratio * 100}%`;
+        return sizer;
+      }
+
+      function createBoundHeightSizer(ratio) {
+        const sizer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        sizer.setAttribute('class', 'internal-sizer for-bound-height');
+        sizer.setAttribute('viewBox', `0 0 1 ${1 / ratio}`);
+        sizer.style.height = '100%';
+        return sizer;
+      }
+
+      function createBoundWidthAndHeightSizer(ratio) {
+        const sizer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        sizer.setAttribute('class', 'internal-sizer for-bound-width-and-height');
+        sizer.setAttribute('viewBox', `0 0 1 ${1 / ratio}`);
+        sizer.style.width = '100%';
+        sizer.style.height = '100%';
+        return sizer;
+      }
+
+      const boxes = Array.from(document.querySelectorAll('.box[data-ratio]'));
+      boxes.forEach(box => {
+        const [w, h] = box.getAttribute('data-ratio').split(':').map(Number);
+        const ratio = w/h;
+        box.style.backgroundImage =
+          `url('https://via.placeholder.com/${w * 100}x${h * 100}')`;
+        box.appendChild(createBoundWidthSizer(ratio));
+        box.appendChild(createBoundHeightSizer(ratio));
+        box.appendChild(createBoundWidthAndHeightSizer(ratio));
+      });
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <h1>Aspect Ratio Tests</h1>
+    <nav>
+      <ul>
+        <li selected ><a id="bound-width">Bound width</a>
+        <li><a id="bound-height">Bound height</a>
+        <li><a id="bound-width-and-height">Bound width and height</a>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="bound-width">
+
+    <section class="container">
+      <div class="outer-cell">
+        <div class="inner-cell">
+          <div class="box" data-ratio="4:3"></div>
+        </div>
+      </div>
+      <div class="outer-cell">
+        <div class="inner-cell">
+          <div class="box" data-ratio="3:4"></div>
+        </div>
+      </div>
+      <div class="outer-cell">
+        <div class="inner-cell">
+          <div class="box" data-ratio="1:1"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+
+<!--
+- [low] bound-height: max-width doesn't work.
+-->

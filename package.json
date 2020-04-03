@@ -1,0 +1,20 @@
+{
+  "name": "@dvoytenko/aspect-ratio-css",
+  "private": false,
+  "description": "Aspect Ratio Tests",
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "0.11.1"
+  },
+  "scripts": {
+    "start": "http-server"
+  },
+  "version": "0.0.1",
+  "main": "index.html",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
