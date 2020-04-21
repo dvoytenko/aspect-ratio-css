@@ -47,9 +47,12 @@
     .internal-sizer {
       display: none;
     }
-    .bound-width .internal-sizer.for-bound-width,
-    .bound-height .internal-sizer.for-bound-height,
-    .bound-width-and-height .internal-sizer.for-bound-width-and-height {
+    .for-bound-width-and-height {
+      display: none;
+    }
+    .bound-width .for-bound-width,
+    .bound-height .for-bound-height,
+    .bound-width-and-height .for-bound-width-and-height {
       display: block;
     }
 
@@ -108,7 +111,7 @@
       align-items: center;
       justify-content: center;
     }
-    .bound-width-and-height .box {
+    .bound-width-and-height .box:not([data-js]) {
       max-width: 100%;
       max-height: 100%;
     }
@@ -168,9 +171,31 @@
         const ratio = w/h;
         box.style.backgroundImage =
           `url('https://via.placeholder.com/${w * 100}x${h * 100}')`;
-        box.appendChild(createBoundWidthSizer(ratio));
-        box.appendChild(createBoundHeightSizer(ratio));
-        box.appendChild(createBoundWidthAndHeightSizer(ratio));
+        if (!box.hasAttribute('data-js')) {
+          box.appendChild(createBoundWidthSizer(ratio));
+          box.appendChild(createBoundHeightSizer(ratio));
+          box.appendChild(createBoundWidthAndHeightSizer(ratio));
+        }
+      });
+
+      const jsBoxes = Array.from(document.querySelectorAll('.box[data-ratio][data-js]'));
+      jsBoxes.forEach(box => {
+        const [w, h] = box.getAttribute('data-ratio').split(':').map(Number);
+        const ratio = w / h;
+
+        const parent = box.parentElement;
+        const ro = new ResizeObserver((records) => {
+          const record = records[records.length - 1];
+          const {width: boxWidth, height: boxHeight} = record.contentRect;
+          const boxRatio = boxWidth / boxHeight
+          console.log('QQQQ: ', {boxWidth, boxHeight, boxRatio});
+
+          const width = ratio > boxRatio ? boxWidth : boxHeight * ratio;
+          const height = ratio > boxRatio ? boxWidth / ratio : boxHeight;
+          box.style.width = `${width}px`;
+          box.style.height = `${height}px`;
+        });
+        ro.observe(parent);
       });
     });
   </script>
@@ -206,6 +231,32 @@
           <div class="box" data-ratio="1:1"></div>
         </div>
       </div>
+    </section>
+
+    <section class="for-bound-width-and-height">
+      <p>
+        No way found to bind width and height together via CSS. See a JavaScript-based
+        implementation instead. The JavaScript implementation is "almost" correct,
+        except it cannot easily take margins into account.
+      </p>
+
+      <section class="container">
+        <div class="outer-cell">
+          <div class="inner-cell">
+            <div class="box" data-js data-ratio="4:3"></div>
+          </div>
+        </div>
+        <div class="outer-cell">
+          <div class="inner-cell">
+            <div class="box" data-js data-ratio="3:4"></div>
+          </div>
+        </div>
+        <div class="outer-cell">
+          <div class="inner-cell">
+            <div class="box" data-js data-ratio="1:1"></div>
+          </div>
+        </div>
+      </section>
     </section>
   </main>
 </body>
