@@ -26,6 +26,19 @@
       text-decoration: underline;
     }
 
+    .native .not-supported {
+      display: none;
+    }
+    .native-not-supported .native {
+      color: #777;
+    }
+    .native-not-supported .native .not-supported {
+      display: block;
+    }
+    .native-not-supported .native .container {
+      display: none;
+    }
+
     .container {
       margin-top: 20px;
       background: cyan;
@@ -140,6 +153,9 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
+      if (!CSS.supports('aspect-ratio: 1/1')) {
+        document.body.classList.add('native-not-supported');
+      }
 
       function createBoundWidthSizer(ratio) {
         const sizer = document.createElement('div');
@@ -165,13 +181,18 @@
         return sizer;
       }
 
-      const boxes = Array.from(document.querySelectorAll('.box[data-ratio]'));
+      const boxes = Array.from(document.querySelectorAll('.box'));
       boxes.forEach(box => {
-        const [w, h] = box.getAttribute('data-ratio').split(':').map(Number);
-        const ratio = w/h;
+        let w, h;
+        if (box.hasAttribute('data-native')) {
+          ([w, h] = box.style.aspectRatio.split('/').map(Number));
+        } else {
+          ([w, h] = box.getAttribute('data-ratio').split(':').map(Number));
+        }
         box.style.backgroundImage =
           `url('https://via.placeholder.com/${w * 100}x${h * 100}')`;
-        if (!box.hasAttribute('data-js')) {
+        if (!box.hasAttribute('data-js') && !box.hasAttribute('data-native')) {
+          const ratio = w / h;
           box.appendChild(createBoundWidthSizer(ratio));
           box.appendChild(createBoundHeightSizer(ratio));
           box.appendChild(createBoundWidthAndHeightSizer(ratio));
@@ -188,7 +209,6 @@
           const record = records[records.length - 1];
           const {width: boxWidth, height: boxHeight} = record.contentRect;
           const boxRatio = boxWidth / boxHeight
-          console.log('QQQQ: ', {boxWidth, boxHeight, boxRatio});
 
           const width = ratio > boxRatio ? boxWidth : boxHeight * ratio;
           const height = ratio > boxRatio ? boxWidth / ratio : boxHeight;
@@ -215,47 +235,66 @@
 
   <main class="bound-width">
 
-    <section class="container">
-      <div class="outer-cell">
-        <div class="inner-cell">
-          <div class="box" data-ratio="4:3"></div>
-        </div>
-      </div>
-      <div class="outer-cell">
-        <div class="inner-cell">
-          <div class="box" data-ratio="3:4"></div>
-        </div>
-      </div>
-      <div class="outer-cell">
-        <div class="inner-cell">
-          <div class="box" data-ratio="1:1"></div>
-        </div>
-      </div>
+    <section class="native">
+      <h3>Native</h3>
+      <section class="not-supported">
+        Not supported.
+      </section>
+      <section class="container">
+        <div class="box" data-native style="aspect-ratio: 4/3"></div>
+        <div class="box" data-native style="aspect-ratio: 3/4"></div>
+        <div class="box" data-native style="aspect-ratio: 1/1"></div>
+      </section>
     </section>
 
-    <section class="for-bound-width-and-height">
+    <section class="emulated">
+      <h3>Emulated</h3>
       <p>
-        No way found to bind width and height together via CSS. See a JavaScript-based
-        implementation instead. The JavaScript implementation is "almost" correct,
-        except it cannot easily take margins into account.
+        The aspect ratio emulation is done using <code>padingTop: ratio%</code>
+        and <code>&lt;svg viewBox="0 0 1 ratio"&gt;</code> hacks.
       </p>
-
       <section class="container">
         <div class="outer-cell">
           <div class="inner-cell">
-            <div class="box" data-js data-ratio="4:3"></div>
+            <div class="box" data-ratio="4:3"></div>
           </div>
         </div>
         <div class="outer-cell">
           <div class="inner-cell">
-            <div class="box" data-js data-ratio="3:4"></div>
+            <div class="box" data-ratio="3:4"></div>
           </div>
         </div>
         <div class="outer-cell">
           <div class="inner-cell">
-            <div class="box" data-js data-ratio="1:1"></div>
+            <div class="box" data-ratio="1:1"></div>
           </div>
         </div>
+      </section>
+
+      <section class="for-bound-width-and-height">
+        <p>
+          No way found to bind width and height together via CSS. See a JavaScript-based
+          implementation instead. The JavaScript implementation is "almost" correct,
+          except it cannot easily take margins into account.
+        </p>
+
+        <section class="container">
+          <div class="outer-cell">
+            <div class="inner-cell">
+              <div class="box" data-js data-ratio="4:3"></div>
+            </div>
+          </div>
+          <div class="outer-cell">
+            <div class="inner-cell">
+              <div class="box" data-js data-ratio="3:4"></div>
+            </div>
+          </div>
+          <div class="outer-cell">
+            <div class="inner-cell">
+              <div class="box" data-js data-ratio="1:1"></div>
+            </div>
+          </div>
+        </section>
       </section>
     </section>
   </main>
