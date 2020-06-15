@@ -98,6 +98,14 @@
       height: 100%;
     }
 
+    /* Cancel 100% height in native case and use align-items: stretch */
+    .bound-height .native .container {
+      align-items: stretch;
+    }
+    .bound-height .native .box {
+      height: auto;
+    }
+
     .bound-width-and-height .container {
       height: 200px;
       display: flex;
