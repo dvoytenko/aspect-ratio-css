@@ -5,6 +5,8 @@
   <title>Aspect Ratio Tests</title>
   <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 
+  <script src="./polyfill.js"></script>
+
   <style app>
     * {
       box-sizing: border-box;
@@ -99,10 +101,12 @@
     }
 
     /* Cancel 100% height in native case and use align-items: stretch */
-    .bound-height .native .container {
+    .bound-height .native .container,
+    .bound-height .polyfill .container {
       align-items: stretch;
     }
-    .bound-height .native .box {
+    .bound-height .native .box,
+    .bound-height .polyfill .box {
       height: auto;
     }
 
@@ -194,12 +198,18 @@
         let w, h;
         if (box.hasAttribute('data-native')) {
           ([w, h] = box.style.aspectRatio.split('/').map(Number));
+        } else if (box.hasAttribute('data-polyfill')) {
+          ([w, h] = box.getAttribute('aspect-ratio').split('/').map(Number));
         } else {
           ([w, h] = box.getAttribute('data-ratio').split(':').map(Number));
         }
         box.style.backgroundImage =
           `url('https://via.placeholder.com/${w * 100}x${h * 100}')`;
-        if (!box.hasAttribute('data-js') && !box.hasAttribute('data-native')) {
+        if (
+          !box.hasAttribute('data-js') &&
+          !box.hasAttribute('data-native') &&
+          !box.hasAttribute('data-polyfill')
+        ) {
           const ratio = w / h;
           box.appendChild(createBoundWidthSizer(ratio));
           box.appendChild(createBoundHeightSizer(ratio));
@@ -252,6 +262,15 @@
         <div class="box" data-native style="aspect-ratio: 4/3"></div>
         <div class="box" data-native style="aspect-ratio: 3/4"></div>
         <div class="box" data-native style="aspect-ratio: 1/1"></div>
+      </section>
+    </section>
+
+    <section class="polyfill">
+      <h3>Polyfill</h3>
+      <section class="container">
+        <div class="box" data-polyfill aspect-ratio="4/3"></div>
+        <div class="box" data-polyfill aspect-ratio="3/4"></div>
+        <div class="box" data-polyfill aspect-ratio="1/1"></div>
       </section>
     </section>
 
