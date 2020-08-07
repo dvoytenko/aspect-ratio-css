@@ -1,6 +1,9 @@
 "use strict";
 
 function installPolyfill(win) {
+  // TODO: exit if `CSS.supports('aspect-ratio: 1/1') == true`. For now it's
+  // open for the side-by-side testing.
+
   const doc = win.document;
 
   const targets = new Map();
