@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Aspect Ratio Tests: Flexbox</title>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+
+  <style app>
+    * {
+      box-sizing: border-box;
+    }
+
+    main > section {
+      margin: 8px 0;
+    }
+
+    .carousel {
+      width: 450px;
+      height: 300px;
+      border: 1px dotted gray;
+      overflow-y: hidden;
+      overflow-x: auto;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .item {
+      flex-shrink: 0;
+      flex-grow: 0;
+      background: cyan;
+    }
+
+    .item:nth-child(2) {
+      background: pink;
+    }
+
+    .item:nth-child(3) {
+      background: yellow;
+    }
+
+    .slides {
+      align-items: center;
+      --visible-count: 3;
+    }
+
+    .slides .item {
+      width: calc(100% / var(--visible-count));
+      max-height: 100%;
+    }
+
+    .filmstrip {
+      justify-content: stretch;
+    }
+
+    .filmstrip .item {
+      max-width: 100%;
+    }
+
+  </style>
+</head>
+<body>
+
+  <main>
+
+    <section>
+      <h3>Slide carousel</h3>
+      <div>
+        width: 100%; max-height: 100%;
+      </div>
+      <section class="carousel slides">
+        <div class="item" style="aspect-ratio: 4/3"></div>
+        <div class="item" style="aspect-ratio: 3/4"></div>
+        <div class="item" style="aspect-ratio: 1/1"></div>
+        <div class="item">No aspect-ratio definition
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras scelerisque dolor vel ante pellentesque venenatis. In efficitur volutpat sem eget volutpat. Sed quis leo tortor. Duis luctus arcu dapibus mollis lacinia. Sed vehicula euismod urna in porttitor. Nam facilisis, purus a cursus dictum, lorem quam scelerisque lacus, fringilla condimentum dui ex sit amet nisl. Pellentesque aliquam est non elit ultrices ultrices. Suspendisse ut ligula et lorem vulputate vehicula at quis quam.</p>
+        </div>
+      </section>
+    </section>
+
+    <section>
+      <h3>Filmstrip carousel</h3>
+      <div>
+        height: 100%; max-width: 100%;
+      </div>
+      <section class="carousel filmstrip">
+        <div class="item" style="aspect-ratio: 4/3"></div>
+        <div class="item" style="aspect-ratio: 3/4"></div>
+        <div class="item" style="aspect-ratio: 1/1"></div>
+        <div class="item">No aspect-ratio definition
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras scelerisque dolor vel ante pellentesque venenatis. In efficitur volutpat sem eget volutpat. Sed quis leo tortor. Duis luctus arcu dapibus mollis lacinia. Sed vehicula euismod urna in porttitor. Nam facilisis, purus a cursus dictum, lorem quam scelerisque lacus, fringilla condimentum dui ex sit amet nisl. Pellentesque aliquam est non elit ultrices ultrices. Suspendisse ut ligula et lorem vulputate vehicula at quis quam.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
