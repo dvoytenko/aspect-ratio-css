@@ -110,6 +110,18 @@
       height: auto;
     }
 
+    .bound-width-and-height .native .box,
+    .bound-width-and-height .polyfill .box {
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0;
+    }
+
+    .bound-width-and-height .native .outer-cell,
+    .bound-width-and-height .polyfill .outer-cell {
+      margin: 4px;
+    }
+
     .bound-width-and-height .container {
       height: 200px;
       display: flex;
@@ -259,9 +271,15 @@
         Not supported.
       </section>
       <section class="container">
-        <div class="box" data-native style="aspect-ratio: 4/3"></div>
-        <div class="box" data-native style="aspect-ratio: 3/4"></div>
-        <div class="box" data-native style="aspect-ratio: 1/1"></div>
+        <div class="outer-cell">
+          <div class="box" data-native style="aspect-ratio: 4/3"></div>
+        </div>
+        <div class="outer-cell">
+          <div class="box" data-native style="aspect-ratio: 3/4"></div>
+        </div>
+        <div class="outer-cell">
+          <div class="box" data-native style="aspect-ratio: 1/1"></div>
+        </div>
       </section>
     </section>
 
