@@ -175,6 +175,7 @@
           item.removeAttribute('selected');
         }
       });
+      window.location.hash = '#x-' + mode;
     }
 
     document.addEventListener('click', (event) => {
@@ -256,6 +257,12 @@
         });
         ro.observe(parent);
       });
+
+      if (location.hash == '#x-bound-width' ||
+          location.hash == '#x-bound-height' ||
+          location.hash == '#x-bound-width-and-height') {
+        setMode(location.hash.substring(3));
+      }
     });
   </script>
 </head>
