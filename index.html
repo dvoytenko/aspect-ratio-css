@@ -100,6 +100,10 @@
       height: 100%;
     }
 
+    .polyfill {
+      position: relative;
+    }
+
     /* Cancel 100% height in native case and use align-items: stretch */
     .bound-height .native .container,
     .bound-height .polyfill .container {
@@ -114,7 +118,12 @@
     .bound-width-and-height .polyfill .box {
       max-width: 100%;
       max-height: 100%;
-      margin: 0;
+      margin: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
     }
 
     .bound-width-and-height .native .outer-cell,
