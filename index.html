@@ -62,12 +62,14 @@
     .internal-sizer {
       display: none;
     }
-    .for-bound-width-and-height {
+    .for-bound-width-and-height,
+    .for-intrinsic-and-float {
       display: none;
     }
     .bound-width .for-bound-width,
     .bound-height .for-bound-height,
-    .bound-width-and-height .for-bound-width-and-height {
+    .bound-width-and-height .for-bound-width-and-height,
+    .intrinsic-and-float .for-intrinsic-and-float {
       display: block;
     }
 
@@ -78,13 +80,31 @@
       display: contents;
     }
 
+    .box {
+      contain: size layout;
+    }
+    .emulated .box {
+      contain: none;
+    }
+
+    section, .container {
+      clear: both;
+    }
+
+    .box-img {
+      width: 100%;
+      height: auto;
+      border: 1px dotted;
+    }
+
     .bound-width .container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
-    .bound-width .box {
+    .bound-width .box,
+    .bound-width .box-img {
       width: 100%;
       max-width: 240px;
     }
@@ -98,6 +118,10 @@
     }
     .bound-height .box {
       height: 100%;
+    }
+    .bound-height .box-img {
+      height: 100%;
+      width: auto;
     }
 
     .polyfill {
@@ -124,6 +148,13 @@
       left: 0;
       right: 0;
       bottom: 0;
+    }
+    .bound-width-and-height .box-img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      margin: auto;
     }
 
     .bound-width-and-height .native .outer-cell,
@@ -160,6 +191,22 @@
     .bound-width-and-height .box:not([data-js]) {
       max-width: 100%;
       max-height: 100%;
+    }
+    .bound-width-and-height .polyfill {
+      display: none !important; /* not implemented */
+    }
+    .bound-width-and-height .images .outer-cell {
+      display: flex;
+    }
+
+    .intrinsic-and-float .outer-cell {
+      display: block;
+      float: left;
+      clear: both;
+      max-width: 100%;
+    }
+    .intrinsic-and-float .polyfill {
+      display: none !important; /* not implemented */
     }
   </style>
 
@@ -215,6 +262,18 @@
         return sizer;
       }
 
+      function createIntrinsicSizer(width, height) {
+        const sizer = document.createElement('div');
+        sizer.className = 'internal-sizer for-intrinsic-and-float';
+
+        const img = document.createElement('img');
+        img.style.display = 'block';
+        img.style.maxWidth = '100%';
+        img.src = `data:image/svg+xml;charset=utf-8,<svg height="${height * 100}" width="${width * 100}" xmlns="http://www.w3.org/2000/svg" version="1.1"/>`;
+        sizer.appendChild(img);
+        return sizer;
+      }
+
       const boxes = Array.from(document.querySelectorAll('.box'));
       boxes.forEach(box => {
         let w, h;
@@ -236,6 +295,7 @@
           box.appendChild(createBoundWidthSizer(ratio));
           box.appendChild(createBoundHeightSizer(ratio));
           box.appendChild(createBoundWidthAndHeightSizer(ratio));
+          box.appendChild(createIntrinsicSizer(w, h));
         }
       });
 
@@ -260,7 +320,8 @@
 
       if (location.hash == '#x-bound-width' ||
           location.hash == '#x-bound-height' ||
-          location.hash == '#x-bound-width-and-height') {
+          location.hash == '#x-bound-width-and-height' ||
+          location.hash == '#x-intrinsic-and-float') {
         setMode(location.hash.substring(3));
       }
     });
@@ -275,6 +336,7 @@
         <li selected ><a id="bound-width">Bound width</a>
         <li><a id="bound-height">Bound height</a>
         <li><a id="bound-width-and-height">Bound width and height</a>
+        <li><a id="intrinsic-and-float">Intrinsic and float</a>
       </ul>
     </nav>
   </header>
@@ -288,13 +350,13 @@
       </section>
       <section class="container">
         <div class="outer-cell">
-          <div class="box" data-native style="aspect-ratio: 4/3"></div>
+          <div class="box" data-native style="aspect-ratio: 4/3; contain-intrinsic-size: 400px 300px;"></div>
         </div>
         <div class="outer-cell">
-          <div class="box" data-native style="aspect-ratio: 3/4"></div>
+          <div class="box" data-native style="aspect-ratio: 3/4; contain-intrinsic-size: 300px 400px;"></div>
         </div>
         <div class="outer-cell">
-          <div class="box" data-native style="aspect-ratio: 1/1"></div>
+          <div class="box" data-native style="aspect-ratio: 1/1; contain-intrinsic-size: 300px 300px;"></div>
         </div>
       </section>
     </section>
@@ -356,6 +418,21 @@
             </div>
           </div>
         </section>
+      </section>
+    </section>
+
+    <section class="images">
+      <h3>Images</h3>
+      <section class="container">
+        <div class="outer-cell">
+          <img class="box-img" src="https://via.placeholder.com/400x300" width="400" height="300">
+        </div>
+        <div class="outer-cell">
+          <img class="box-img" src="https://via.placeholder.com/300x400" width="300" height="400">
+        </div>
+        <div class="outer-cell">
+          <img class="box-img" src="https://via.placeholder.com/300x300" width="300" height="300">
+        </div>
       </section>
     </section>
   </main>
